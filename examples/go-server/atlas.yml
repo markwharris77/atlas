@@ -1,0 +1,10 @@
+app:
+  name: go-server
+  version: 0.0.1
+deploy:
+  local-dir: ./bin
+  user: deploy
+  host: markharris.local
+run:
+  command: ["/opt/atlas/test-go-server/current/go-server"]
+  user: mark
