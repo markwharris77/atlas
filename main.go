@@ -54,6 +54,12 @@ Flags:`)
 
 	cmd := args[0]
 
+	target := tools.Target{
+		User: cfg.Deploy.User,
+		Host: cfg.Deploy.Host,
+		Port: cfg.Deploy.Port,
+	}
+
 	switch cmd {
 	case "describe":
 		if err := config.Print(cfg); err != nil {
@@ -62,13 +68,9 @@ Flags:`)
 		}
 	case "deploy":
 		err = commands.RunDeploy(commands.DeployOptions{
-			Name:      cfg.App.Name,
-			LocalPath: cfg.Deploy.LocalDir,
-			Target: tools.Target{
-				User: cfg.Deploy.User,
-				Host: cfg.Deploy.Host,
-				Port: cfg.Deploy.Port,
-			},
+			Name:       cfg.App.Name,
+			LocalPath:  cfg.Deploy.LocalDir,
+			Target:     target,
 			RunUser:    cfg.Run.User,
 			RunCommand: cfg.Run.Command,
 			RunEnv:     cfg.Run.Env,
@@ -77,6 +79,18 @@ Flags:`)
 		if err != nil {
 			log.Error("failed to deploy: %s", err)
 		}
+
+	case "status":
+		err = commands.PrintStatus(commands.StatusOptions{
+			Target:   target,
+			UnitName: cfg.App.Name,
+		})
+
+	case "restart":
+		err = commands.RunRestart(commands.RestartOptions{
+			Target:   target,
+			UnitName: cfg.App.Name,
+		})
 
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
